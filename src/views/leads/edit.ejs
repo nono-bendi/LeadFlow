@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><%= title %> · CoverPro</title>
+  <link rel="stylesheet" href="/css/style.css" />
+<script src="/js/app.js" defer></script>
+
+
+
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">CoverPro</a>
+      <div class="topbar-nav">
+        <a href="/">Accueil</a>
+        <a href="/leads">Leads</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container section">
+    <h1><%= title %></h1>
+    <p class="muted">Créé le : <strong><%= lead.created_at %></strong></p>
+
+    <form method="POST" action="/leads/<%= lead.id %>" class="card form" id="leadEditForm" data-action="edit">
+      <label>Nom complet
+        <input name="fullname" type="text" required value="<%= lead.fullname %>" />
+      </label>
+
+      <div class="grid-2">
+        <label>Téléphone
+          <input name="phone" type="tel" value="<%= lead.phone %>" />
+        </label>
+        <label>Email
+          <input name="email" type="email" value="<%= lead.email %>" />
+        </label>
+      </div>
+
+      <label>Source
+        <input name="source" type="text" value="<%= lead.source %>" />
+      </label>
+
+      <label>Statut
+        <select name="status">
+          <% STATUSES.forEach(s => { %>
+            <option value="<%= s %>" <%= lead.status === s ? "selected" : "" %>><%= s %></option>
+          <% }) %>
+        </select>
+      </label>
+
+      <div class="stack">
+        <button class="btn primary" type="submit">Enregistrer</button>
+        <a class="btn ghost" href="/leads">Annuler</a>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

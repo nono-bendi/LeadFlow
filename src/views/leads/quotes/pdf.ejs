@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title><%= quote.number %> - Devis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* ====== RESET/BASE ====== */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #1c1c1c; }
+  h1,h2,h3 { margin: 0; }
+  .muted { color:#6b7280; }
+  .small { font-size: 11px; }
+  .right { text-align: right; }
+  .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top:16px; } .mt-6 { margin-top:24px; }
+  .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom:16px; }
+
+  /* ====== THEME ====== */
+  :root {
+    --brand:#111827;          /* noir doux */
+    --accent:#111827;         /* même teinte pour un rendu élégant */
+    --line:#e5e7eb;           /* gris clair pour les bordures */
+    --zebra:#f9fafb;          /* fond lignes impaires */
+  }
+
+  /* ====== PAGE LAYOUT ====== */
+  .page {
+    padding: 24mm 16mm 18mm 16mm;   /* marges internes pour A4 */
+  }
+
+  /* ====== HEADER ====== */
+  .header {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    border-bottom: 2px solid var(--brand); padding-bottom: 10px;
+  }
+  .brand {
+    max-width: 60%;
+  }
+  .brand__name { font-size: 22px; font-weight: 700; color: var(--brand); }
+  .brand__meta { margin-top: 6px; line-height: 1.4; }
+  .logo { width: 110px; height: auto; object-fit: contain; }
+
+  .docbox {
+    text-align:right;
+  }
+  .docbox__title { font-size: 18px; font-weight: 700; color: var(--brand); }
+  .docbox__meta { margin-top:6px; }
+
+  /* ====== BILLETS (CLIENT / INFOS) ====== */
+  .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .card {
+    border:1px solid var(--line); border-radius: 8px; padding:10px 12px;
+  }
+  .card h3 { font-size:13px; color: var(--brand); margin-bottom:6px; }
+
+  /* ====== TABLE LIGNES ====== */
+  table { width:100%; border-collapse: collapse; }
+  thead th {
+    font-size:12px; text-transform: uppercase; letter-spacing: .3px;
+    background: #f3f4f6; color:#111827; border:1px solid var(--line); padding:8px;
+  }
+  tbody td {
+    border:1px solid var(--line); padding:8px; vertical-align: top;
+  }
+  tbody tr:nth-child(odd) td { background: var(--zebra); }
+
+  .num { text-align: right; white-space: nowrap; }
+  .desc { width: 55%; }
+
+  /* ====== TOTALS ====== */
+  .totals {
+    margin-top: 12px; width: 45%; margin-left: auto;
+    border:1px solid var(--line); border-radius: 8px; overflow: hidden;
+  }
+  .totals__row { display:flex; justify-content:space-between; padding:8px 10px; border-bottom:1px solid var(--line); }
+  .totals__row:last-child { border-bottom: none; background:#111827; color:white; font-weight:700; }
+  .totals__label { }
+  .totals__value { }
+
+  /* ====== CONDITIONS / SIGNATURE ====== */
+  .footer {
+    margin-top: 18px; display:grid; grid-template-columns: 1fr 1fr; gap:14px;
+  }
+  .legal { border:1px dashed var(--line); border-radius:8px; padding:10px 12px; }
+  .sign { border:1px dashed var(--line); border-radius:8px; padding:10px 12px; min-height: 90px; }
+  .sign__line { margin-top: 36px; border-top:1px solid var(--line); width: 70%; }
+
+  /* ====== FILIGRANE (optionnel) ====== */
+  .watermark {
+    position: fixed; top: 45%; left: 50%; transform: translate(-50%,-50%) rotate(-20deg);
+    font-size: 72px; color: rgba(17,24,39,.05); font-weight: 800; letter-spacing:2px; pointer-events:none;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Filigrane facultatif pour brouillon -->
+  <% if (quote.status === 'draft') { %>
+    <div class="watermark">DEVIS</div>
+  <% } %>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand__name"><%= company.name || 'CoverPro' %></div>
+      <div class="brand__meta small muted">
+        <% if (company.address) { %><div><%= company.address %></div><% } %>
+        <% if (company.email || company.phone) { %>
+          <div><%= company.email || '' %> <%= company.phone ? ' · ' + company.phone : '' %></div>
+        <% } %>
+        <% if (company.siret) { %><div>SIRET : <%= company.siret %></div><% } %>
+        <% if (company.tva_intra) { %><div>TVA intracom. : <%= company.tva_intra %></div><% } %>
+      </div>
+    </div>
+    <div class="docbox">
+      <% if (company.logo_url) { %>
+        <img class="logo" src="<%= company.logo_url %>" alt="Logo">
+      <% } %>
+      <div class="docbox__title">Devis <%= quote.number %></div>
+      <div class="docbox__meta small muted mt-2">
+        <div>Émis le : <%= (quote.created_at || '').slice(0,10) %></div>
+        <% if (quote.valid_until) { %><div>Valable jusqu’au : <%= quote.valid_until %></div><% } %>
+        <div>Statut : <%= (quote.status || 'draft') %></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT + INFOS -->
+  <div class="grid-2">
+    <div class="card">
+      <h3>Client</h3>
+      <div><strong><%= quote.client_name %></strong></div>
+      <% if (quote.client_address) { %><div><%= quote.client_address %></div><% } %>
+      <div class="muted small">
+        <%= quote.client_email || '' %> <%= quote.client_phone ? ' · ' + quote.client_phone : '' %>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Informations</h3>
+      <div class="small muted">
+        Devise : <%= quote.currency || 'EUR' %><br>
+        TVA : <%= (quote.tva_rate*100).toFixed(2) %> %<br>
+        Référence : <%= quote.number %>
+      </div>
+      <% if (quote.notes) { %>
+        <div class="mt-2"><em><%= quote.notes %></em></div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- TABLE DES LIGNES -->
+  <div class="mt-4">
+    <table>
+      <thead>
+        <tr>
+          <th class="desc">Désignation</th>
+          <th>Qté</th>
+          <th>PU HT</th>
+          <th>Remise %</th>
+          <th>Total ligne</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(it => { %>
+          <tr>
+            <td class="desc"><%= it.description %></td>
+            <td class="num"><%= it.qty %></td>
+            <td class="num"><%= (it.unit_price_cents/100).toLocaleString('fr-FR',{style:'currency',currency:quote.currency||'EUR'}) %></td>
+            <td class="num"><%= (Number(it.discount_percent)||0).toFixed(2) %></td>
+            <td class="num"><%= (it.line_total_cents/100).toLocaleString('fr-FR',{style:'currency',currency:quote.currency||'EUR'}) %></td>
+          </tr>
+        <% }) %>
+        <% if (items.length === 0) { %>
+          <tr><td colspan="5" class="muted small">Aucune ligne pour le moment.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TOTAUX -->
+  <div class="totals">
+    <div class="totals__row">
+      <div class="totals__label">Sous-total HT</div>
+      <div class="totals__value"><strong><%= (quote.subtotal_cents/100).toLocaleString('fr-FR',{style:'currency',currency:quote.currency||'EUR'}) %></strong></div>
+    </div>
+    <div class="totals__row">
+      <div class="totals__label">TVA <%= (quote.tva_rate*100).toFixed(2) %>%</div>
+      <div class="totals__value"><strong><%= (quote.tva_cents/100).toLocaleString('fr-FR',{style:'currency',currency:quote.currency||'EUR'}) %></strong></div>
+    </div>
+    <div class="totals__row">
+      <div class="totals__label">Total TTC</div>
+      <div class="totals__value"><strong><%= (quote.total_cents/100).toLocaleString('fr-FR',{style:'currency',currency:quote.currency||'EUR'}) %></strong></div>
+    </div>
+  </div>
+
+  <!-- CONDITIONS & SIGNATURE -->
+  <div class="footer">
+    <div class="legal small">
+      <strong>Conditions / Mentions</strong><br>
+      Devis valable jusqu’au <%= quote.valid_until || '—' %>. Prix HT, TVA selon taux en vigueur.<br>
+      Règlement : 30% à la commande, solde à la livraison (exemple, adapte).<br>
+      Droit de rétractation / CGV : préciser si applicable. <br>
+      <%= company.name || 'CoverPro' %> — <%= company.siret ? 'SIRET '+company.siret+' — ' : '' %><%= company.tva_intra ? 'TVA intra : '+company.tva_intra : '' %>
+    </div>
+    <div class="sign small">
+      <strong>Signature client, précédée de la mention « Bon pour accord »</strong>
+      <div class="sign__line"></div>
+      <div class="muted">Date : .......... / .......... / ..........</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

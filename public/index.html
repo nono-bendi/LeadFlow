@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CoverPro — Tableau de bord</title>
+
+  <!-- Servi par express.static('public') -->
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/app.js" defer></script>
+</head>
+
+<body>
+  <!-- Barre du haut -->
+  <nav class="topbar" aria-label="Barre de navigation">
+    <div class="topbar-inner">
+      <span class="Admin"> <a class="brand" href="/">Admin Area</a></span>
+      <div class="topbar-nav">
+        <a href="/">Accueil</a>
+        <a href="/leads">Leads</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container section">
+    <!-- En-tête dashboard -->
+    <section class="card">
+      <div class="header-row">
+        <div>
+          <h1>Tableau de bord</h1>
+          <p class="muted">Vue d’ensemble de votre activité (leads, devis, mises à jour).</p>
+        </div>
+        <div class="stack">
+          <a class="btn primary" href="/leads">Ouvrir les leads</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tuiles de résumé (statistiques rapides) -->
+    <section class="grid-3">
+      <div class="card center">
+        <h2>Leads totaux</h2>
+        <p class="muted">Tous statuts confondus</p>
+        <div style="font-size:34px; font-weight:800;" id="stat-total">—</div>
+        <a class="btn" href="/leads">Voir la liste</a>
+      </div>
+
+      <div class="card center">
+        <h2>Devis envoyés</h2>
+        <p class="muted">Statut “devis_envoye”</p>
+        <div style="font-size:34px; font-weight:800;" id="stat-devis">—</div>
+        <a class="btn" href="/leads?q=devis">Filtrer les leads</a>
+      </div>
+
+      <div class="card center">
+        <h2>Acceptés</h2>
+        <p class="muted">Statut “accepte”</p>
+        <div style="font-size:34px; font-weight:800;" id="stat-accepte">—</div>
+        <a class="btn" href="/leads?q=accepte">Filtrer les leads</a>
+      </div>
+    </section>
+
+    <!-- Zone 1 : Leads & Devis -->
+    <section class="card">
+      <h2>Leads & Devis</h2>
+      <p class="muted">Gérez vos prospects, mettez à jour leurs statuts et créez des devis.</p>
+      <div class="stack" style="margin-top:8px;">
+        <a class="btn primary" href="/leads">Accéder à la gestion des leads</a>
+        <div class="alert">Astuce : vous pouvez rechercher par nom ou email, et naviguer page par page.</div>
+      </div>
+    </section>
+
+    <!-- Zone 2 : Statistiques (placeholder, prêt pour branchement futur) -->
+ <section class="card">
+  <h2>Statistiques</h2>
+  <p class="muted">Évolution des leads par statut sur les 7 derniers jours</p>
+
+  <div style="margin-top:12px;">
+    <canvas id="chart-7d" height="360" style="width:100%; display:block;"></canvas>
+  </div>
+</section>
+
+
+    <!-- Zone 3 : Site Web / CMS (placeholder pour futures MAJ de contenu) -->
+    <section class="card">
+      <h2>Site Web / CMS</h2>
+      <p class="muted">Mettez à jour les contenus de votre site (textes, services, coordonnées).</p>
+
+      <div class="grid-2" style="margin-top:8px;">
+        <div class="hero">
+          <strong>Pages & contenus</strong>
+          <p class="muted">Modifier la page d’accueil, descriptions, tarifs…</p>
+          <a class="btn" href="#" aria-disabled="true">Ouvrir le CMS (bientôt)</a>
+        </div>
+        <div class="hero">
+          <strong>Informations de contact</strong>
+          <p class="muted">Téléphone, email, horaires, réseaux sociaux…</p>
+          <a class="btn" href="#" aria-disabled="true">Mettre à jour (bientôt)</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- En bas de <body> -->
+ <script src="/vendor/chart.umd.js"></script>
+  <script src="/js/app.js" defer></script>
+
+</body>
+
+</html>

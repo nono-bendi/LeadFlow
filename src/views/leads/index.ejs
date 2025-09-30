@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><%= title %> · CoverPro</title>
+  <link rel="stylesheet" href="/css/style.css" />
+ <script src="/js/app.js" defer></script>
+
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <span class="Admin">
+      <a class="brand" href="/">Admin Area</a></span>
+      <div class="topbar-nav">
+        <a href="/">Accueil</a>
+        <a href="/leads">Leads</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container section">
+    <!-- Recherche -->
+    <form method="GET" action="/leads" class="form" style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
+      <input type="text" name="q" value="<%= q || '' %>" placeholder="Rechercher nom ou email…" />
+      <button class="btn" type="submit">Rechercher</button>
+      <% if (q) { %>
+        <a class="btn ghost" href="/leads">Réinitialiser</a>
+      <% } %>
+    </form>
+
+    <!-- Liste -->
+    <section class="card">
+      <h1>Liste des leads</h1>
+
+      <div class="table">
+        <div class="tr th">
+          <div>Nom</div>
+          <div>Téléphone</div>
+          <div>Email</div>
+          <div>Source</div>
+          <div>Statut</div>
+          <div><strong>Créé le</strong></div>
+          <div>Actions</div>
+          
+        </div>
+
+        <% if (leads.length === 0) { %>
+          <p class="muted">Aucun lead pour le moment.</p>
+        <% } %>
+
+        <% leads.forEach(l => { %>
+          <div class="tr">
+            <div><%= l.fullname %></div>
+            <div><%= l.phone || "—" %></div>
+            <div><%= l.email || "—" %></div>
+            <div><%= l.source || "—" %></div>
+            <div><span class="badge" data-status="<%= l.status %>"><%= l.status %></span></div>
+            <div><%= l.created_at %></div>
+            <div>
+              <div class="stack">
+                <span class="badge">
+                <form method="POST" action="/leads/<%= l.id %>/status" class="form"
+                      data-action="status" style="display:flex; gap:8px; align-items:center;">
+                  <select name="status">
+                    <% STATUSES.forEach(s => { %>
+                      <option value="<%= s %>" <%= l.status === s ? "selected" : "" %>><%= s %></option>
+                    <% }) %>
+                  </select>
+                  <button class="btn" type="submit">Maj statut</button>
+                </form>
+              </span>
+                <a class="btn" href="/leads/<%= l.id %>/edit">Modifier</a>
+
+                <form method="POST" action="/leads/<%= l.id %>/delete"
+                      data-action="delete" onsubmit="return false;">
+                  <button class="btn" type="submit">Supprimer</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Pagination sous la table -->
+      <% if (totalPages > 1) { %>
+        <nav class="pagination" style="margin-top: 12px; display:flex; gap:6px; flex-wrap:wrap;">
+          <% const prevPage = page > 1 ? page - 1 : 1; %>
+          <a class="btn <%= page === 1 ? 'disabled' : '' %>" href="/leads?<%= q ? 'q=' + encodeURIComponent(q) + '&' : '' %>page=<%= prevPage %>">« Précédent</a>
+
+          <% const start = Math.max(1, page - 2); %>
+          <% const end = Math.min(totalPages, page + 2); %>
+          <% for (let p = start; p <= end; p++) { %>
+            <a class="btn <%= p === page ? 'primary' : '' %>" href="/leads?<%= q ? 'q=' + encodeURIComponent(q) + '&' : '' %>page=<%= p %>"><%= p %></a>
+          <% } %>
+
+          <% const nextPage = page < totalPages ? page + 1 : totalPages; %>
+          <a class="btn <%= page === totalPages ? 'disabled' : '' %>" href="/leads?<%= q ? 'q=' + encodeURIComponent(q) + '&' : '' %>page=<%= nextPage %>">Suivant »</a>
+
+          <span class="muted" style="margin-left:8px;">Page <%= page %> / <%= totalPages %> — <%= total %> résultats</span>
+        </nav>
+      <% } %>
+    </section>
+
+    <!-- Formulaire d’ajout -->
+    <section class="card">
+      <h2>Ajouter un lead</h2>
+      <form method="POST" action="/leads" class="form" id="leadCreateForm">
+        <label>Nom complet
+          <input type="text" name="fullname" required placeholder="Ex: Paul Martin" />
+        </label>
+        <div class="grid-2">
+          <label>Téléphone
+            <input type="tel" name="phone" placeholder="06..." />
+          </label>
+          <label>Email
+            <input type="email" name="email" placeholder="client@mail.fr" />
+          </label>
+        </div>
+        <label>Source
+          <input type="text" name="source" placeholder="Instagram, site, bouche-à-oreille..." />
+        </label>
+        
+        <button class="btn primary" type="submit">Enregistrer</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
